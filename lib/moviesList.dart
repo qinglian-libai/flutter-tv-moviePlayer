@@ -144,48 +144,51 @@ class ClassificationPage extends StatelessWidget {
 }
 
 class RowTitleButton extends StatefulWidget {
-  const RowTitleButton(
-      {super.key, required this.title, required this.x, required this.y});
+   RowTitleButton(
+      {super.key, required this.title, required this.x, required this.y, this.isSelect=false});
 
   final Widget title;
   final int x;
   final int y;
+  late bool isSelect = false;
 
   @override
   State<StatefulWidget> createState() => _RowTitleButton();
 }
 
 class _RowTitleButton extends State<RowTitleButton> {
-  late bool isSelect = false;
+
 
   @override
   initState() {
     super.initState();
     // TvControl.registerChildButton(widget.x, widget.y, this);
-    TvControl.getPageMap(indexPageName).valueListenable.addListener(() {
-      ViewMapButton eventPoint = TvControl.getPageMap(indexPageName).valueListenable.value;
-      if(eventPoint.position != PointPosition(widget.x, widget.y)){
-        if (isSelect){
-          setState(() {
-            isSelect = !isSelect;
-          });
-        }
-      }else{
-        if (!isSelect && !eventPoint.selectStatus){
-          // 光标移动到这个节点了
-          setState(() {
-            isSelect = !isSelect;
-          });
-        }else if (isSelect && eventPoint.selectStatus){
-          // 确定事件
-        }
+    TvControl.getPageMap(indexPageName).valueListenable.addListener(listStatus);
+  }
+
+  listStatus(){
+    ViewMapButton eventPoint = TvControl.getPageMap(indexPageName).valueListenable.value;
+    if(eventPoint.position != PointPosition(widget.x, widget.y)){
+      if (widget.isSelect){
+        setState(() {
+          widget.isSelect = !widget.isSelect;
+        });
       }
-    });
+    }else{
+      if (!widget.isSelect && !eventPoint.selectStatus){
+        // 光标移动到这个节点了
+        setState(() {
+          widget.isSelect = !widget.isSelect;
+        });
+      }else if (widget.isSelect && eventPoint.selectStatus){
+        // 确定事件
+      }
+    }
   }
 
   changeSelect() {
     setState(() {
-      isSelect = !isSelect;
+      widget.isSelect = !widget.isSelect;
     });
   }
 
@@ -198,7 +201,7 @@ class _RowTitleButton extends State<RowTitleButton> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20,vertical:2),
       child: Container(
-        decoration: isSelect
+        decoration: widget.isSelect
             ? BoxDecoration(
                 color: titleSelectColor,
                 borderRadius: BorderRadius.circular(50))
@@ -208,6 +211,11 @@ class _RowTitleButton extends State<RowTitleButton> {
     );
   }
 
+  @override
+  dispose(){
+    super.dispose();
+    TvControl.getPageMap(indexPageName).valueListenable.addListener(listStatus);
+  }
 }
 
 // 右侧主界面显示
@@ -301,7 +309,6 @@ class _MoviesList extends State<MoviesList> {
   }
 
   showGridView() {
-
     return GridView.builder(
         shrinkWrap: true,
         itemCount: moviesData.length,
@@ -315,7 +322,7 @@ class _MoviesList extends State<MoviesList> {
         padding: const EdgeInsets.only(left: 16.0, top: 0, right: 16),
         itemBuilder: (context, index) {
           return MoviePage(
-              x: (index % 5) + 1, y: (index ~/ 5) + 1, data: moviesData[index]);
+              x: (index % 5) + 1, y: (index ~/ 5) + 1, data: moviesData[index],isSelect: index==0);
         });
   }
 
@@ -335,47 +342,48 @@ class _MoviesList extends State<MoviesList> {
 }
 
 class MoviePage extends StatefulWidget {
-  const MoviePage(
-      {super.key, required this.data, required this.x, required this.y});
+  MoviePage(
+      {super.key, required this.data, required this.x, required this.y, this.isSelect=false});
 
   final int x;
   final int y;
   final MovieListModel data;
-
+  late  bool isSelect;
   @override
   State<MoviePage> createState() => _MoviePage();
 }
 
 class _MoviePage extends State<MoviePage>{
-  bool isSelect = false;
 
   @override
   initState() {
     super.initState();
-    TvControl.getPageMap(indexPageName).valueListenable.addListener(() {
-      ViewMapButton eventPoint = TvControl.getPageMap(indexPageName).valueListenable.value;
-      if(eventPoint.position != PointPosition(widget.x, widget.y)){
-        if (isSelect){
-          setState(() {
-            isSelect = false;
-          });
-        }
-      }else{
-        if (!isSelect && !eventPoint.selectStatus){
-          // 光标移动到这个节点了
-          changeSelect();
-        }else if(isSelect&&eventPoint.selectStatus){
-          // 确定事件
-          onSelected();
-        }
+    TvControl.getPageMap(indexPageName).valueListenable.addListener(listStatus);
+  }
+
+  listStatus(){
+    ViewMapButton eventPoint = TvControl.getPageMap(indexPageName).valueListenable.value;
+    if(eventPoint.position != PointPosition(widget.x, widget.y)){
+      if (widget.isSelect){
+        setState(() {
+          widget.isSelect = false;
+        });
       }
-    });
+    }else{
+      if (!widget.isSelect && !eventPoint.selectStatus){
+        // 光标移动到这个节点了
+        changeSelect();
+      }else if(widget.isSelect&&eventPoint.selectStatus){
+        // 确定事件
+        onSelected();
+      }
+    }
   }
 
   @override
   dispose() {
     super.dispose();
-    // TvControl.unDisplayChildButton(widget.x,widget.y);
+    TvControl.getPageMap(indexPageName).valueListenable.removeListener(listStatus);
   }
 
   changeSelect() {
@@ -399,7 +407,7 @@ class _MoviePage extends State<MoviePage>{
       alignment = 1.0;
     } else {
       setState(() {
-        isSelect = !isSelect;
+        widget.isSelect = !widget.isSelect;
       });
       return;
     }
@@ -410,7 +418,7 @@ class _MoviePage extends State<MoviePage>{
     );
 
     setState(() {
-      isSelect = !isSelect;
+      widget.isSelect = !widget.isSelect;
     });
   }
 
@@ -427,26 +435,23 @@ class _MoviePage extends State<MoviePage>{
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.all(5),
-      decoration: isSelect
+      decoration: widget.isSelect
           ? BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               border: Border.all(
                   color: const Color.fromARGB(255, 2, 154, 235), width: 1),
             )
           : null,
-      child: InkWell(
-        onTap: onSelected,
-        child: Container(
-          margin: const EdgeInsets.all(15.0),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(15),
-            child: Image.asset(
-              widget.data.image,
-              fit: BoxFit.cover,
-            ),
+      child: Container(
+        margin: const EdgeInsets.all(15.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(15),
+          child: Image.asset(
+            widget.data.image,
+            fit: BoxFit.cover,
           ),
         ),
       ),

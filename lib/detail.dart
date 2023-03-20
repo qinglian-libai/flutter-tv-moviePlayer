@@ -330,32 +330,35 @@ class PlayMoviesButton extends StatefulWidget{
 }
 
 class _PlayMoviesButton extends State<PlayMoviesButton>{
-  bool isSelect = false;
+  bool isSelect = true;
 
   @override
   void initState() {
     super.initState();
-    TvControl.getPageMap(detailPageName).valueListenable.addListener(() {
-      ViewMapButton eventPoint = TvControl.getPageMap(indexPageName).valueListenable.value;
-      if(eventPoint.position != PointPosition.startPoint){
-        if (isSelect){
-          setState(() {
-            isSelect = false;
-          });
-        }
-      }else{
-        if (isSelect && eventPoint.selectStatus){
-          // 确定事件
-          onSelected();
-        }else if (!isSelect){
-          // 光标移动到这个节点了
-          setState(() {
-            isSelect = true;
-          });
+    TvControl.getPageMap(detailPageName).valueListenable.addListener(listStatus);
+  }
 
-        }
+  listStatus(){
+    ViewMapButton eventPoint = TvControl.getPageMap(indexPageName).valueListenable.value;
+    print('当前选择的坐标是${eventPoint}');
+    if(eventPoint.position != PointPosition.startPoint){
+      if (isSelect){
+        setState(() {
+          isSelect = false;
+        });
       }
-    });
+    }else{
+      if (isSelect && eventPoint.selectStatus){
+        // 确定事件
+        onSelected();
+      }else if (!isSelect){
+        // 光标移动到这个节点了
+        setState(() {
+          isSelect = true;
+        });
+
+      }
+    }
   }
 
   @override
@@ -392,6 +395,7 @@ class _PlayMoviesButton extends State<PlayMoviesButton>{
     });
   }
 
+
 }
 
 class MoveTag extends StatefulWidget{
@@ -413,27 +417,28 @@ class _MoveTag extends State<MoveTag>{
     super.initState();
     // TvControl.registerChildButton(
     //     widget.index % 10, (widget.index ~/ 10) + 1, this);
-    TvControl.getPageMap(detailPageName).valueListenable.addListener(() {
-      ViewMapButton eventPoint = TvControl.getPageMap(indexPageName).valueListenable.value;
-      if(eventPoint.position != PointPosition(widget.index % 10, (widget.index ~/ 10) + 1)){
-        if (isSelect){
-          setState(() {
-            isSelect = false;
-          });
-        }
-      }else{
-        if (!isSelect && !eventPoint.selectStatus){
-          // 光标移动到这个节点了
-          setState(() {
-            isSelect = true;
-          });
-        }else if (isSelect && eventPoint.selectStatus){
-          // 确定事件
-        }
-      }
-    });
+    TvControl.getPageMap(detailPageName).valueListenable.addListener(listStatus);
   }
 
+  listStatus(){
+    ViewMapButton eventPoint = TvControl.getPageMap(indexPageName).valueListenable.value;
+    if(eventPoint.position != PointPosition(widget.index % 10, (widget.index ~/ 10) + 1)){
+      if (isSelect){
+        setState(() {
+          isSelect = false;
+        });
+      }
+    }else{
+      if (!isSelect && !eventPoint.selectStatus){
+        // 光标移动到这个节点了
+        setState(() {
+          isSelect = true;
+        });
+      }else if (isSelect && eventPoint.selectStatus){
+        // 确定事件
+      }
+    }
+  }
   changeSelect() {
     setState(() {
       isSelect = !isSelect;
@@ -465,6 +470,12 @@ class _MoveTag extends State<MoveTag>{
       ),
     );
   }
+
+  @override
+  dispose(){
+    super.dispose();
+    TvControl.getPageMap(detailPageName).valueListenable.removeListener(listStatus);
+  }
 }
 
 class ActorIcon extends StatefulWidget {
@@ -484,27 +495,27 @@ class _ActorIcon extends State<ActorIcon> {
   @override
   void initState() {
     super.initState();
-    // TvControl.registerChildButton(
-    //     (widget.index % 3) + 10, (widget.index ~/ 3) + 1, this);
-    TvControl.getPageMap(detailPageName).valueListenable.addListener(() {
-      ViewMapButton eventPoint = TvControl.getPageMap(indexPageName).valueListenable.value;
-      if(eventPoint.position != PointPosition((widget.index % 3) + 10, (widget.index ~/ 3) + 1)){
-        if (isSelect){
-          setState(() {
-            isSelect = false;
-          });
-        }
-      }else{
-        if (!isSelect && !eventPoint.selectStatus){
-          // 光标移动到这个节点了
-          setState(() {
-            isSelect = true;
-          });
-        }else if (isSelect && eventPoint.selectStatus){
-          // 确定事件
-        }
+    TvControl.getPageMap(detailPageName).valueListenable.addListener(listStatus);
+  }
+
+  listStatus() {
+    ViewMapButton eventPoint = TvControl.getPageMap(indexPageName).valueListenable.value;
+    if(eventPoint.position != PointPosition((widget.index % 3) + 10, (widget.index ~/ 3) + 1)){
+      if (isSelect){
+        setState(() {
+          isSelect = false;
+        });
       }
-    });
+    }else{
+      if (!isSelect && !eventPoint.selectStatus){
+        // 光标移动到这个节点了
+        setState(() {
+          isSelect = true;
+        });
+      }else if (isSelect && eventPoint.selectStatus){
+        // 确定事件
+      }
+    }
   }
 
   @override
@@ -554,4 +565,9 @@ class _ActorIcon extends State<ActorIcon> {
     throw UnimplementedError();
   }
 
+  @override
+  dispose(){
+    super.dispose();
+    TvControl.getPageMap(detailPageName).valueListenable.removeListener(listStatus);
+  }
 }

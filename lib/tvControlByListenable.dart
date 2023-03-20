@@ -211,6 +211,7 @@ class MyGrid {
 class ViewMap {
   ViewMap();
 
+  late String pageName="defaultMap";
   // 手动指定坐标了，就不自动寻找最小的坐标了
   late bool setPoint = false;
   final List<PointPosition> _directionPoint = [];
@@ -388,6 +389,11 @@ class ViewMapButton {
     // TODO: implement ==
     return super == other;
   }
+
+  @override
+  toString() {
+    return '$position ,选中状态：$selectStatus';
+  }
 }
 
 class TvControl {
@@ -421,7 +427,7 @@ class TvControl {
         // 第一个使用默认值
         _pageMap[pageName] = defaultMap;
       } else {
-        _pageMap[pageName] = ViewMap();
+        _pageMap[pageName] = ViewMap()..pageName=pageName;
       }
     }
     _activationPage = getPageMap(pageName);
@@ -502,7 +508,6 @@ class TvControl {
   }
 
   static oneTouch(KeyType event) {
-    print('listen按键事件$event');
     switch (event) {
       case KeyType.unknown:
         {
@@ -538,9 +543,11 @@ class TvControl {
       case KeyType.dPadDown:
       case KeyType.dPadLeft:
       case KeyType.dPadRight:
+        print("移动事件");
         if (_activationPage.move(event)) {
           _activationPage.valueListenable.value = ViewMapButton(
               position: _activationPage.selectPoint, selectStatus: false);
+          // print("${_activationPage.pageName} 当前光标移动到${_activationPage.selectPoint}");
         }
         break;
       default:
