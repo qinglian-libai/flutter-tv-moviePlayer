@@ -1,3 +1,5 @@
+import 'package:tv_app/tvControlByListenable.dart';
+
 List<List<String>> data = [
   ['0,0' '0,1', '0,2' '0,3', '0,4'],
   ['1,0' '1,1', '1,2' '1,3', '1,4'],
@@ -7,8 +9,14 @@ List<List<String>> data = [
 ];
 
 void main() {
-  print(data);
-  for(var i=data[0].length-1;i<0;i--){
-    data[0][i];
-  }
+  // print(data);
+  // for(var i=data[0].length-1;i<0;i--){
+  //   data[0][i];
+  // }
+  ViewMapButton a = ViewMapButton(
+    position:PointPosition(0,0),
+    selectStatus:false,
+  );
+  print( a.position == PointPosition.startPoint);
+  print(PointPosition.startPoint.hashCode);
 }

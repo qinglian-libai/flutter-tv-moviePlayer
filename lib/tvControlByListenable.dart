@@ -223,7 +223,7 @@ class ViewMap {
       TvControl.longTouchKeyEvent;
   final ValueNotifier<ViewMapButton> valueListenable =
       ValueNotifier<ViewMapButton>(
-          ViewMapButton(position: PointPosition.startPoint));
+          ViewMapButton(position: PointPosition.startPoint,selectStatus:false));
 
   late PointPosition maxPoint = PointPosition.startPoint;
 
@@ -545,6 +545,7 @@ class TvControl {
       case KeyType.dPadRight:
         print("移动事件");
         if (_activationPage.move(event)) {
+          print('移动到：${_activationPage.selectPoint}');
           _activationPage.valueListenable.value = ViewMapButton(
               position: _activationPage.selectPoint, selectStatus: false);
           // print("${_activationPage.pageName} 当前光标移动到${_activationPage.selectPoint}");

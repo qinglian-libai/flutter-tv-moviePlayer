@@ -56,7 +56,6 @@ class ClassificationPage extends StatelessWidget {
   final List<String> tagName;
 
   leftOptionsButton() {
-    print("固定功能");
     return ListView.builder(
       controller: ScrollController(),
       itemCount: optionsButtonName.length,
@@ -89,7 +88,6 @@ class ClassificationPage extends StatelessWidget {
   }
 
   movieTageList() {
-    print("标签页");
     return ListView.builder(
       controller: ScrollController(),
       itemCount: tagName.length + 1,
@@ -119,7 +117,6 @@ class ClassificationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("功能区渲染");
     TvControl.registerGrid(0, 0, 1, optionsButtonName.length + optionsButtonName.length);
     return Container(
       decoration: const BoxDecoration(
@@ -426,7 +423,6 @@ class _MoviePage extends State<MoviePage>{
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return const TVMovieDetailPage(movieData: testMovieData);
     })).then((value){
-      print('处理返回页面操作');
       TvControl.activationPageMap(indexPageName);
     });
   }

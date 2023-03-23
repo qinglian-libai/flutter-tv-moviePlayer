@@ -1,11 +1,9 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:tv_app/simulatedData.dart';
 import 'package:tv_app/tvControlByListenable.dart';
 
 import 'PlayPage.dart';
-import 'moviesList.dart';
 
 // UI  https://dribbble.com/shots/11999981-TV-movie-details-page/attachments/3628468?mode=media
 const coverColor = Color.fromRGBO(97, 97, 96, 0.7);
@@ -339,9 +337,8 @@ class _PlayMoviesButton extends State<PlayMoviesButton>{
   }
 
   listStatus(){
-    ViewMapButton eventPoint = TvControl.getPageMap(indexPageName).valueListenable.value;
-    print('当前选择的坐标是${eventPoint}');
-    if(eventPoint.position != PointPosition.startPoint){
+    ViewMapButton eventPoint = TvControl.getPageMap(detailPageName).valueListenable.value;
+    if(eventPoint.position != PointPosition(0,0)){
       if (isSelect){
         setState(() {
           isSelect = false;
@@ -421,7 +418,7 @@ class _MoveTag extends State<MoveTag>{
   }
 
   listStatus(){
-    ViewMapButton eventPoint = TvControl.getPageMap(indexPageName).valueListenable.value;
+    ViewMapButton eventPoint = TvControl.getPageMap(detailPageName).valueListenable.value;
     if(eventPoint.position != PointPosition(widget.index % 10, (widget.index ~/ 10) + 1)){
       if (isSelect){
         setState(() {
@@ -499,7 +496,7 @@ class _ActorIcon extends State<ActorIcon> {
   }
 
   listStatus() {
-    ViewMapButton eventPoint = TvControl.getPageMap(indexPageName).valueListenable.value;
+    ViewMapButton eventPoint = TvControl.getPageMap(detailPageName).valueListenable.value;
     if(eventPoint.position != PointPosition((widget.index % 3) + 10, (widget.index ~/ 3) + 1)){
       if (isSelect){
         setState(() {
